@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>VSlauncher</title>
+</head>
+<body style="background:#0b0f1a;color:white;font-family:sans-serif;text-align:center;padding-top:100px;">
+
+<h1>VSlauncher</h1>
+
+<% if (!user) { %>
+<a href="/auth/discord">Войти через Discord</a>
+<% } else { %>
+<a href="/dashboard">Личный кабинет</a>
+<% } %>
+
+</body>
+</html>
