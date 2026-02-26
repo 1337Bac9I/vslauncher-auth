@@ -1,10 +1,11 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-    discordId: { type: String, unique: true },
+    discordId: String,
     username: String,
-    avatar: String,
-    uid: { type: Number, unique: true },
+    avatar: String,          // аватар из Discord
+    customAvatar: String,    // загруженный аватар
+    uid: Number,
     createdAt: { type: Date, default: Date.now }
 });
 
