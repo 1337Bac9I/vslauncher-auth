@@ -5,7 +5,6 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const fetch = require("node-fetch");
-const path = require("path");
 
 const User = require("./models/User");
 
@@ -93,29 +92,6 @@ app.get("/auth/discord/callback", async (req, res) => {
 app.get("/dashboard", checkAuth, async (req, res) => {
   const user = await User.findById(req.session.userId).populate("friends");
   res.render("dashboard", { user });
-});
-
-app.post("/profile/update", checkAuth, async (req, res) => {
-  await User.findByIdAndUpdate(req.session.userId, {
-    displayName: req.body.displayName
-  });
-  res.redirect("/dashboard");
-});
-
-app.post("/friends/add", checkAuth, async (req, res) => {
-  const friend = await User.findOne({ username: req.body.username });
-  if (!friend) return res.send("Пользователь не найден");
-
-  await User.findByIdAndUpdate(req.session.userId, {
-    $addToSet: { friends: friend._id }
-  });
-
-  res.redirect("/dashboard");
-});
-
-app.get("/logout", (req, res) => {
-  req.session.destroy();
-  res.redirect("/");
 });
 
 app.listen(3000, () => console.log("Server started"));
