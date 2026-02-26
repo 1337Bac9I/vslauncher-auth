@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Личный кабинет</title>
+</head>
+<body style="background:#0b0f1a;color:white;font-family:sans-serif;text-align:center;padding-top:100px;">
+
+<h1>Добро пожаловать, <%= user.username %></h1>
+
+<img src="https://cdn.discordapp.com/avatars/<%= user.discordId %>/<%= user.avatar %>.png" width="120">
+
+<p>Email: <%= user.email %></p>
+<p>Дата регистрации: <%= user.createdAt.toDateString() %></p>
+
+<a href="/logout">Выйти</a>
+
+</body>
+</html>
