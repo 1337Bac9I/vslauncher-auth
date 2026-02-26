@@ -1,25 +1,38 @@
-<h1>Профиль</h1>
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
 
-<%
-let avatar;
-if (user.customAvatar) {
-    avatar = user.customAvatar;
-} else if (user.avatar) {
-    avatar = user.avatar;
-} else {
-    avatar = "/vs.jpg";
-}
-%>
+<h2>Профиль</h2>
 
-<img src="<%= avatar %>" width="150">
+<img src="<%= user.avatar %>" width="120">
 
-<p>Ник: <%= user.username %></p>
 <p>UID: <%= user.uid %></p>
+<p>Username: <%= user.username %></p>
+<p>Display Name: <%= user.displayName %></p>
 
-<form action="/profile/update" method="POST" enctype="multipart/form-data">
-    <input name="username" placeholder="Новый ник">
-    <input type="file" name="avatar">
-    <button>Обновить</button>
+<form action="/profile/update" method="POST">
+  <input type="text" name="displayName" placeholder="Новое имя">
+  <button type="submit">Сохранить</button>
 </form>
 
-<a href="/download">Скачать лаунчер</a>
+<h3>Друзья</h3>
+<ul>
+  <% user.friends.forEach(f => { %>
+    <li><%= f.displayName %> (<%= f.username %>)</li>
+  <% }) %>
+</ul>
+
+<h3>Добавить в друзья</h3>
+<form action="/friends/add" method="POST">
+  <input type="text" name="username" placeholder="username">
+  <button type="submit">Добавить</button>
+</form>
+
+<br>
+<a href="/logout">Выйти</a>
+
+</body>
+</html>
