@@ -1,37 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>VSLauncher</title>
-    <link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/style.css">
 </head>
 <body>
 
-<section class="hero">
-    <h1>VSLauncher</h1>
-    <p>Современный Minecraft лаунчер нового поколения</p>
-    <a href="/download" class="btn">Скачать лаунчер</a>
-</section>
+<h1>VSLauncher</h1>
 
-<section class="features">
-    <h2>Почему VSLauncher?</h2>
-
-    <div class="cards">
-        <div class="card">
-            <h3>⚡ Быстрый запуск</h3>
-            <p>Мгновенная загрузка клиента</p>
-        </div>
-
-        <div class="card">
-            <h3>🎨 Современный дизайн</h3>
-            <p>Минималистичный интерфейс</p>
-        </div>
-
-        <div class="card">
-            <h3>🔒 Безопасность</h3>
-            <p>Надёжная система авторизации</p>
-        </div>
-    </div>
-</section>
+<% if (!user) { %>
+  <a href="/auth/discord" class="btn">Войти через Discord</a>
+<% } else { %>
+  <a href="/dashboard" class="btn">В кабинет</a>
+<% } %>
 
 </body>
 </html>
