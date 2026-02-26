@@ -1,45 +1,25 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Dashboard</title>
-<style>
-body{
-    background:#0f172a;
-    color:white;
-    font-family:Arial;
-}
-.container{
-    max-width:600px;
-    margin:100px auto;
-    background:#111827;
-    padding:40px;
-    border-radius:20px;
-    text-align:center;
-}
-img{
-    width:150px;
-    border-radius:50%;
-}
-a{
-    display:inline-block;
-    margin-top:20px;
-    background:#ef4444;
-    padding:10px 20px;
-    border-radius:10px;
-    color:white;
-    text-decoration:none;
-}
-</style>
-</head>
-<body>
+<h1>Профиль</h1>
 
-<div class="container">
-    <h1>Добро пожаловать</h1>
-    <img src="<%= user.avatar %>">
-    <h2><%= user.username %></h2>
-    <p>UID: <%= user.uid %></p>
-    <a href="/logout">Выйти</a>
-</div>
+<%
+let avatar;
+if (user.customAvatar) {
+    avatar = user.customAvatar;
+} else if (user.avatar) {
+    avatar = user.avatar;
+} else {
+    avatar = "/vs.jpg";
+}
+%>
 
-</body>
-</html>
+<img src="<%= avatar %>" width="150">
+
+<p>Ник: <%= user.username %></p>
+<p>UID: <%= user.uid %></p>
+
+<form action="/profile/update" method="POST" enctype="multipart/form-data">
+    <input name="username" placeholder="Новый ник">
+    <input type="file" name="avatar">
+    <button>Обновить</button>
+</form>
+
+<a href="/download">Скачать лаунчер</a>
