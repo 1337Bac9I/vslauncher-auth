@@ -1,48 +1,44 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Профиль</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<title>Dashboard</title>
 <style>
 body{
-    margin:0;
-    font-family:'Inter',sans-serif;
     background:#0f172a;
     color:white;
+    font-family:Arial;
 }
-.card{
-    max-width:500px;
-    margin:120px auto;
-    background:#1e293b;
+.container{
+    max-width:600px;
+    margin:100px auto;
+    background:#111827;
     padding:40px;
-    border-radius:16px;
+    border-radius:20px;
     text-align:center;
 }
-.avatar{
-    width:100px;
-    height:100px;
+img{
+    width:150px;
     border-radius:50%;
 }
-.btn{
+a{
     display:inline-block;
     margin-top:20px;
-    background:#3b82f6;
+    background:#ef4444;
     padding:10px 20px;
-    border-radius:8px;
-    text-decoration:none;
+    border-radius:10px;
     color:white;
+    text-decoration:none;
 }
 </style>
 </head>
 <body>
 
-<div class="card">
-<img class="avatar" src="https://cdn.discordapp.com/avatars/<%= user.discordId %>/<%= user.avatar %>.png">
-<h2><%= user.username %></h2>
-<p>ID: <%= user.discordId %></p>
-
-<a href="/logout" class="btn">Выйти</a>
+<div class="container">
+    <h1>Добро пожаловать</h1>
+    <img src="<%= user.avatar %>">
+    <h2><%= user.username %></h2>
+    <p>UID: <%= user.uid %></p>
+    <a href="/logout">Выйти</a>
 </div>
 
 </body>
