@@ -1,155 +1,19 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body {
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #0a0f1f, #0f1b35);
-    color: #fff;
-    min-height: 100vh;
-}
-
-/* ---------- HERO ---------- */
-
-.hero {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 20px;
-}
-
-.hero h1 {
-    font-size: 64px;
-    background: linear-gradient(90deg, #00f0ff, #0066ff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: glow 2s infinite alternate;
-}
-
-.hero p {
-    margin-top: 15px;
-    color: #aaa;
-    font-size: 20px;
+  background: #0a0f1f;
+  color: white;
+  font-family: Arial;
+  text-align: center;
 }
 
 .btn {
-    margin-top: 30px;
-    padding: 14px 32px;
-    background: #0066ff;
-    color: white;
-    text-decoration: none;
-    border-radius: 8px;
-    transition: 0.3s;
-    box-shadow: 0 0 15px rgba(0, 102, 255, 0.5);
-}
-
-.btn:hover {
-    background: #0050cc;
-    box-shadow: 0 0 25px rgba(0, 150, 255, 0.8);
-    transform: translateY(-2px);
-}
-
-/* ---------- FEATURES ---------- */
-
-.features {
-    padding: 100px 20px;
-    text-align: center;
-}
-
-.features h2 {
-    font-size: 40px;
-    margin-bottom: 50px;
-}
-
-.cards {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    flex-wrap: wrap;
-}
-
-.card {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(8px);
-    padding: 30px;
-    width: 260px;
-    border-radius: 12px;
-    transition: 0.3s;
-    border: 1px solid rgba(0, 150, 255, 0.3);
-}
-
-.card:hover {
-    transform: translateY(-10px);
-    border-color: #00f0ff;
-}
-
-/* ---------- DASHBOARD ---------- */
-
-.dashboard {
-    display: flex;
-    min-height: 100vh;
-}
-
-.sidebar {
-    width: 260px;
-    background: #0d1528;
-    padding: 30px;
-    border-right: 1px solid rgba(0, 150, 255, 0.3);
-}
-
-.sidebar img {
-    width: 140px;
-    border-radius: 50%;
-    display: block;
-    margin: 0 auto 20px auto;
-    box-shadow: 0 0 20px rgba(0, 150, 255, 0.6);
-}
-
-.sidebar h2 {
-    text-align: center;
-    margin-bottom: 10px;
-}
-
-.sidebar p {
-    text-align: center;
-    color: #aaa;
-}
-
-.content {
-    flex: 1;
-    padding: 50px;
-}
-
-.form-group {
-    margin-bottom: 20px;
+  padding: 10px 20px;
+  background: #00f0ff;
+  color: black;
+  text-decoration: none;
+  border-radius: 5px;
 }
 
 input {
-    width: 100%;
-    padding: 12px;
-    background: #0f1b35;
-    border: 1px solid rgba(0, 150, 255, 0.4);
-    color: white;
-    border-radius: 6px;
-}
-
-input:focus {
-    outline: none;
-    border-color: #00f0ff;
-}
-
-/* ---------- ANIMATION ---------- */
-
-@keyframes glow {
-    from {
-        text-shadow: 0 0 10px #00f0ff;
-    }
-    to {
-        text-shadow: 0 0 25px #0066ff;
-    }
+  padding: 8px;
+  margin: 5px;
 }
