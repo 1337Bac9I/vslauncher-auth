@@ -5,8 +5,6 @@ const userSchema = new mongoose.Schema({
     username: String,
     avatar: String,
     uid: { type: Number, unique: true },
-    customUsername: String,
-    customAvatar: String,
     createdAt: { type: Date, default: Date.now }
 });
 
