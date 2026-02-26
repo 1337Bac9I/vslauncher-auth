@@ -5,10 +5,11 @@ const UserSchema = new mongoose.Schema({
 
   uid: { type: Number, unique: true },
 
-  username: { type: String, unique: true }, // для добавления в друзья
-  displayName: { type: String }, // публичное имя
+  username: { type: String, unique: true },
 
-  avatar: { type: String },
+  displayName: String,
+
+  avatar: String,
 
   friends: [
     { type: mongoose.Schema.Types.ObjectId, ref: "User" }
