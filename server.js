@@ -1,112 +1,121 @@
 require("dotenv").config();
+
 const express = require("express");
 const mongoose = require("mongoose");
 const session = require("express-session");
-const passport = require("passport");
-const DiscordStrategy = require("passport-discord").Strategy;
-const multer = require("multer");
+const MongoStore = require("connect-mongo");
+const fetch = require("node-fetch");
 const path = require("path");
+
 const User = require("./models/User");
 
 const app = express();
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static("public"));
+mongoose.connect(process.env.MONGO_URI);
+
 app.set("view engine", "ejs");
+app.use(express.static("public"));
+app.use(express.urlencoded({ extended: true }));
 
-app.use(session({
-    secret: "vslauncher-secret",
+app.use(
+  session({
+    secret: "secretkey",
     resave: false,
-    saveUninitialized: false
-}));
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI
+    })
+  })
+);
 
-app.use(passport.initialize());
-app.use(passport.session());
-
-mongoose.connect(process.env.MONGODB_URI);
-
-// ---------- MULTER ----------
-const storage = multer.diskStorage({
-    destination: "public/uploads",
-    filename: (req, file, cb) => {
-        cb(null, req.user.id + path.extname(file.originalname));
-    }
-});
-const upload = multer({ storage });
-
-// ---------- DISCORD ----------
-passport.use(new DiscordStrategy({
-    clientID: process.env.CLIENT_ID,
-    clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: process.env.CALLBACK_URL,
-    scope: ["identify"]
-}, async (accessToken, refreshToken, profile, done) => {
-
-    let user = await User.findOne({ discordId: profile.id });
-
-    if (!user) {
-        const count = await User.countDocuments();
-        user = await User.create({
-            discordId: profile.id,
-            username: profile.username,
-            avatar: profile.avatar
-                ? `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png`
-                : null,
-            uid: count + 1
-        });
-    }
-
-    return done(null, user);
-}));
-
-passport.serializeUser((user, done) => done(null, user.id));
-passport.deserializeUser(async (id, done) => {
-    const user = await User.findById(id);
-    done(null, user);
-});
-
-// ---------- ROUTES ----------
-
-function isAuth(req, res, next) {
-    if (req.isAuthenticated()) return next();
-    res.redirect("/auth/discord");
+function checkAuth(req, res, next) {
+  if (!req.session.userId) return res.redirect("/");
+  next();
 }
 
-app.get("/", (req, res) => {
-    res.render("home", { user: req.user });
+app.get("/", async (req, res) => {
+  let user = null;
+  if (req.session.userId) {
+    user = await User.findById(req.session.userId);
+  }
+  res.render("home", { user });
 });
 
-app.get("/auth/discord",
-    passport.authenticate("discord")
-);
-
-app.get("/auth/discord/callback",
-    passport.authenticate("discord", { failureRedirect: "/" }),
-    (req, res) => res.redirect("/dashboard")
-);
-
-app.get("/dashboard", isAuth, (req, res) => {
-    res.render("dashboard", { user: req.user });
+app.get("/auth/discord", (req, res) => {
+  const redirect = `https://discord.com/api/oauth2/authorize?client_id=${process.env.CLIENT_ID}&redirect_uri=${process.env.REDIRECT_URI}&response_type=code&scope=identify`;
+  res.redirect(redirect);
 });
 
-// ---------- Обновление профиля ----------
-app.post("/profile/update", isAuth, upload.single("avatar"), async (req, res) => {
+app.get("/auth/discord/callback", async (req, res) => {
+  const code = req.query.code;
 
-    if (req.body.username) {
-        req.user.username = req.body.username;
+  const tokenRes = await fetch("https://discord.com/api/oauth2/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      client_id: process.env.CLIENT_ID,
+      client_secret: process.env.CLIENT_SECRET,
+      grant_type: "authorization_code",
+      code,
+      redirect_uri: process.env.REDIRECT_URI
+    })
+  });
+
+  const tokenData = await tokenRes.json();
+
+  const userRes = await fetch("https://discord.com/api/users/@me", {
+    headers: {
+      Authorization: `Bearer ${tokenData.access_token}`
     }
+  });
 
-    if (req.file) {
-        req.user.customAvatar = "/uploads/" + req.file.filename;
-    }
+  const profile = await userRes.json();
 
-    await req.user.save();
-    res.redirect("/dashboard");
+  let user = await User.findOne({ discordId: profile.id });
+
+  if (!user) {
+    const lastUser = await User.findOne().sort({ uid: -1 });
+    const nextUid = lastUser ? lastUser.uid + 1 : 1000;
+
+    user = await User.create({
+      discordId: profile.id,
+      uid: nextUid,
+      username: "user" + nextUid,
+      displayName: profile.username,
+      avatar: `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png`
+    });
+  }
+
+  req.session.userId = user._id;
+  res.redirect("/dashboard");
 });
 
-// ---------- Скачать ----------
-app.get("/download", isAuth, (req, res) => {
-    res.download(path.join(__dirname, "public", "VSLauncher.exe"));
+app.get("/dashboard", checkAuth, async (req, res) => {
+  const user = await User.findById(req.session.userId).populate("friends");
+  res.render("dashboard", { user });
 });
 
-app.listen(3000, () => console.log("Server running"));
+app.post("/profile/update", checkAuth, async (req, res) => {
+  await User.findByIdAndUpdate(req.session.userId, {
+    displayName: req.body.displayName
+  });
+  res.redirect("/dashboard");
+});
+
+app.post("/friends/add", checkAuth, async (req, res) => {
+  const friend = await User.findOne({ username: req.body.username });
+  if (!friend) return res.send("Пользователь не найден");
+
+  await User.findByIdAndUpdate(req.session.userId, {
+    $addToSet: { friends: friend._id }
+  });
+
+  res.redirect("/dashboard");
+});
+
+app.get("/logout", (req, res) => {
+  req.session.destroy();
+  res.redirect("/");
+});
+
+app.listen(3000, () => console.log("Server started"));
