@@ -1,68 +1,34 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>VSlauncher</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<title>VSLauncher</title>
 <style>
 body{
-    margin:0;
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg,#0f172a,#1e3a8a);
+    background:#0f172a;
     color:white;
-}
-.nav{
-    display:flex;
-    justify-content:space-between;
-    padding:20px 60px;
-}
-.logo{
-    font-size:22px;
-    font-weight:800;
-}
-.btn{
-    background:#3b82f6;
-    padding:10px 20px;
-    border-radius:8px;
-    text-decoration:none;
-    color:white;
-    font-weight:600;
-}
-.hero{
+    font-family:Arial;
     text-align:center;
-    margin-top:120px;
+    padding-top:150px;
 }
-.hero h1{
-    font-size:48px;
-}
-.hero p{
-    opacity:0.8;
-    margin:20px 0;
+a{
+    background:#3b82f6;
+    padding:15px 30px;
+    border-radius:10px;
+    color:white;
+    text-decoration:none;
+    font-size:20px;
 }
 </style>
 </head>
 <body>
 
-<div class="nav">
-<div class="logo">VSlauncher</div>
-<% if (!user) { %>
-<a href="/auth/discord" class="btn">Войти через Discord</a>
+<h1>VSLauncher</h1>
+
+<% if(!user){ %>
+<a href="/auth/discord">Войти через Discord</a>
 <% } else { %>
-<a href="/dashboard" class="btn">Личный кабинет</a>
+<a href="/dashboard">Перейти в кабинет</a>
 <% } %>
-</div>
-
-<div class="hero">
-<h1>Minecraft лаунчер нового поколения</h1>
-<p>Быстрый. Удобный. Современный.</p>
-
-<% if (!user) { %>
-<a href="/auth/discord" class="btn">Начать</a>
-<% } else { %>
-<a href="/dashboard" class="btn">Перейти в кабинет</a>
-<% } %>
-
-</div>
 
 </body>
 </html>
