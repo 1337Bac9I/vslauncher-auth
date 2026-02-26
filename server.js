@@ -58,7 +58,7 @@ passport.use(new DiscordStrategy({
 }));
 
 app.get("/", (req, res) => {
-    res.render("index", { user: req.user });
+    res.render("home", { user: req.user });
 });
 
 app.get("/auth/discord",
