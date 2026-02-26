@@ -1,29 +1,28 @@
 require("dotenv").config();
-const User = require("./models/User");
 const express = require("express");
 const session = require("express-session");
 const mongoose = require("mongoose");
 const passport = require("passport");
 const DiscordStrategy = require("passport-discord").Strategy;
+const MongoStore = require("connect-mongo");
+
+const User = require("./models/User");
 
 const app = express();
 
-mongoose.connect(process.env.MONGO_URI)
-.then(() => console.log("Mongo connected"))
-.catch(err => console.log(err));
+app.set("view engine", "ejs");
 
-const UserSchema = new mongoose.Schema({
-    discordId: String,
-    username: String,
-    avatar: String
-});
-
-const User = mongoose.model("User", UserSchema);
+mongoose.connect(process.env.MONGODB_URI)
+.then(() => console.log("MongoDB connected"))
+.catch(err => console.error(err));
 
 app.use(session({
-    secret: process.env.SESSION_SECRET,
+    secret: "vslauncher-secret",
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGODB_URI
+    })
 }));
 
 app.use(passport.initialize());
@@ -40,30 +39,31 @@ passport.use(new DiscordStrategy({
     callbackURL: process.env.DISCORD_CALLBACK_URL,
     scope: ["identify"]
 }, async (accessToken, refreshToken, profile, done) => {
+
     let user = await User.findOne({ discordId: profile.id });
+
     if (!user) {
+        const lastUser = await User.findOne().sort({ uid: -1 });
+        const nextUID = lastUser ? lastUser.uid + 1 : 1;
+
         user = await User.create({
             discordId: profile.id,
             username: profile.username,
-            avatar: profile.avatar
+            avatar: `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png`,
+            uid: nextUID
         });
     }
-    done(null, user);
+
+    return done(null, user);
 }));
 
-app.set("view engine", "ejs");
-app.use(express.static("public"));
-
 app.get("/", (req, res) => {
-    res.render("home", { user: req.user });
+    res.render("index", { user: req.user });
 });
 
-app.get("/dashboard", (req, res) => {
-    if (!req.user) return res.redirect("/");
-    res.render("dashboard", { user: req.user });
-});
-
-app.get("/auth/discord", passport.authenticate("discord"));
+app.get("/auth/discord",
+    passport.authenticate("discord")
+);
 
 app.get("/auth/discord/callback",
     passport.authenticate("discord", { failureRedirect: "/" }),
@@ -72,10 +72,16 @@ app.get("/auth/discord/callback",
     }
 );
 
+app.get("/dashboard", (req, res) => {
+    if (!req.user) return res.redirect("/");
+    res.render("dashboard", { user: req.user });
+});
+
 app.get("/logout", (req, res) => {
     req.logout(() => {
         res.redirect("/");
     });
 });
 
-app.listen(3000, () => console.log("Server running"));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log("Server running"));
