@@ -1,12 +1,20 @@
 const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema({
-    discordId: String,
-    username: String,
-    avatar: String,          // аватар из Discord
-    customAvatar: String,    // загруженный аватар
-    uid: Number,
-    createdAt: { type: Date, default: Date.now }
+const UserSchema = new mongoose.Schema({
+  discordId: { type: String, required: true, unique: true },
+
+  uid: { type: Number, unique: true },
+
+  username: { type: String, unique: true }, // для добавления в друзья
+  displayName: { type: String }, // публичное имя
+
+  avatar: { type: String },
+
+  friends: [
+    { type: mongoose.Schema.Types.ObjectId, ref: "User" }
+  ],
+
+  createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("User", UserSchema);
